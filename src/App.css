@@ -1,0 +1,169 @@
+/* src/App.css — FULL-BLEED variant (paste whole file, replace existing) */
+/* --- FORCE FULL-WIDTH LAYOUT (paste at top of App.css) --- */
+body {
+  display: block !important;
+  min-height: 100vh;
+  margin: 0 !important;
+  padding: 0 !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+}
+
+/* ensure root and page containers are full width */
+html, #root, .app-root, .page-wrap {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* make .container full-bleed (no centering) */
+.container {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 28px !important;
+  box-sizing: border-box;
+}
+
+:root{
+  --accent: #1f8ef1;
+  --muted: #6b7280;
+  --bg: #f6f7f9;
+  --card-bg: #fff;
+  --text: #0f172a;
+  --radius: 10px;
+}
+
+/* Reset / base */
+*{box-sizing:border-box}
+html,body,#root{height:100%}
+body{
+  margin:0;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* NAVBAR - full width */
+.navbar {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: rgba(255,255,255,0.95);
+  border-bottom: 1px solid rgba(15,23,42,0.04);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  display: block !important;
+}
+
+
+/* IMPORTANT: full-bleed navbar inner */
+.navbar-inner{
+  width: 100% !important;
+  max-width: none !important;
+  padding: 14px 28px !important;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 16px;
+  margin: 0 !important;
+}
+
+/* Brand and links */
+.brand{
+  font-weight:700;
+  text-decoration:none;
+  color:var(--text);
+  font-size:20px;
+}
+.brand-accent{ color:var(--accent); }
+.nav-links a{
+  margin-left:16px;
+  color:var(--text);
+  text-decoration:none;
+  font-size:15px;
+}
+.btn-login{
+  padding:8px 10px;
+  border-radius:8px;
+  background:var(--accent);
+  color:white;
+}
+
+/* PAGE WRAP and container (full-bleed) */
+.page-wrap{
+  padding-top:18px;
+}
+
+/* IMPORTANT: full-bleed container */
+.container{
+  width:100% !important;
+  max-width:none !important;
+  margin: 0 !important;    /* remove centering */
+  padding: 0 28px !important;
+  box-sizing: border-box;
+}
+
+
+/* Cards and content */
+.card{
+  background:var(--card-bg);
+  padding:18px;
+  border-radius:var(--radius);
+  box-shadow: 0 8px 24px rgba(15,23,42,0.06);
+  margin-bottom:18px;
+}
+
+/* Hero */
+.hero{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  padding:24px;
+}
+.hero h1{ margin:0; font-size:28px; color:var(--text) }
+.lead{ color:var(--muted); margin-top:8px; }
+
+/* Buttons */
+.btn{
+  background:var(--accent);
+  color:white;
+  padding:10px 14px;
+  border-radius:10px;
+  text-decoration:none;
+  border:none;
+  cursor:pointer;
+}
+.btn.ghost{
+  background:transparent;
+  color:var(--text);
+  border:1px solid #e6e9ef;
+}
+
+/* Grid / columns and lists */
+.grid{ display:grid; gap:18px; }
+.two-col{ grid-template-columns: 1fr 360px; align-items:start; }
+.side{ width:100%; }
+.list{ display:flex; flex-direction:column; gap:12px; margin-top:12px; }
+.card-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px; border-radius:8px; text-decoration:none; color:inherit; background:linear-gradient(180deg,#ffffff,#fbfdff); }
+.meta{ color:var(--muted); font-size:13px; margin-top:6px; }
+.empty{ color:var(--muted); padding:14px; text-align:center; }
+.input{ width:100%; padding:10px 12px; border-radius:8px; border:1px solid #e6e9ef;  padding-right: 44px; }
+
+/* smaller screens tweak */
+@media (max-width: 520px) {
+  .input { padding-right: 44px; }
+}
+/* Responsive adjustments */
+@media (max-width:1000px){
+  .two-col{ grid-template-columns: 1fr; }
+  .hero{ flex-direction:column; align-items:flex-start; }
+}
+@media (max-width:520px){
+  .brand{ font-size:18px }
+  .nav-links a{ font-size:14px }
+  .hero h1{ font-size:22px; }
+}
