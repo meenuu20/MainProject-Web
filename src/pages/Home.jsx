@@ -1,5 +1,5 @@
 // src/pages/Home.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 // sample data to show UI (you can later load from api)
@@ -9,6 +9,19 @@ const sampleEvents = [
 ];
 
 export default function Home() {
+  const [events, setEvents] = useState(sampleEvents);
+  useEffect(() => {
+  fetch("http://127.0.0.1:5000/api/events")
+    .then(res => res.json())
+    .then(data => {
+      if (Array.isArray(data) && data.length > 0) {
+        setEvents(data);
+      }
+    })
+    .catch(err => {
+      console.warn("Backend not available, using sample data");
+    });
+}, []);
   return (
     <div className="container">
       {/* Centered hero */}
@@ -31,7 +44,7 @@ export default function Home() {
             <div className="stat-label">New Today</div>
           </div>
           <div className="stat" style={{marginTop:12}}>
-            <div className="stat-number">{sampleEvents.length}</div>
+            <div className="stat-number">{events.length}</div>
             <div className="stat-label">Total Events</div>
           </div>
         </div>
@@ -42,7 +55,7 @@ export default function Home() {
         <div className="card">
           <h3 style={{marginTop:0}}>Recent Events</h3>
           <div className="list">
-            {sampleEvents.map(ev => (
+            {events.map(ev => (
               <Link key={ev.id} to={`/alerts/${ev.id}`} className="card-row">
                 <div>
                   <div style={{fontWeight:600}}>{ev.title}</div>
@@ -53,7 +66,7 @@ export default function Home() {
                 </div>
               </Link>
             ))}
-            {sampleEvents.length === 0 && <div className="empty">No recent events</div>}
+            {events.length === 0 && <div className="empty">No recent events</div>}
           </div>
         </div>
 
