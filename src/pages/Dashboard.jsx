@@ -1,10 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchEvidenceList } from "../api";
+import { deleteAllEvidence, fetchEvidenceList } from "../api";
 
 export default function Dashboard() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [clearing, setClearing] = useState(false);
+
+  function loadEvents() {
+    setLoading(true);
+    return fetchEvidenceList()
+      .then((data) => {
+        setEvents(data.items || []);
+      })
+      .catch(() => {
+        setEvents([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
 
   useEffect(() => {
     let active = true;
@@ -30,6 +45,23 @@ export default function Dashboard() {
       active = false;
     };
   }, []);
+
+  async function handleClearAll() {
+    const confirmed = window.confirm("Delete all evidence events from the dashboard?");
+    if (!confirmed) {
+      return;
+    }
+
+    setClearing(true);
+    try {
+      await deleteAllEvidence();
+      await loadEvents();
+    } catch {
+      window.alert("Failed to clear evidence. Please try again.");
+    } finally {
+      setClearing(false);
+    }
+  }
 
   return (
     <div className="container page-shell">
@@ -84,6 +116,9 @@ export default function Dashboard() {
             <p className="muted">Operations queue</p>
             <h4 className="section-title">Latest Evidence</h4>
           </div>
+          <button className="btn small" onClick={handleClearAll} disabled={clearing || loading}>
+            {clearing ? "Clearing..." : "Clear All"}
+          </button>
         </div>
         {loading && <div className="empty">Loading evidence...</div>}
         {!loading && events.length === 0 && (

@@ -9,6 +9,14 @@ async function fetchJson(path) {
   return response.json();
 }
 
+async function sendJson(path, options = {}) {
+  const response = await fetch(`${API_BASE_URL}${path}`, options);
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}`);
+  }
+  return response.json();
+}
+
 export { API_BASE_URL };
 
 export async function fetchEvidenceList() {
@@ -17,4 +25,8 @@ export async function fetchEvidenceList() {
 
 export async function fetchEvidenceById(eventId) {
   return fetchJson(`/api/evidence/${eventId}`);
+}
+
+export async function deleteAllEvidence() {
+  return sendJson("/api/evidence", { method: "DELETE" });
 }
