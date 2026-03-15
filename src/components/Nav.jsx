@@ -1,8 +1,7 @@
-// src/components/Nav.jsx
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import "../App.css"; // ensure global styles loaded (optional)
+import "../App.css";
 
 export default function Nav() {
   const { user, logout } = useAuth();
@@ -21,13 +20,13 @@ export default function Nav() {
         </Link>
 
         <nav className="nav-links">
-          <Link to="/">Home</Link>
-          <Link to="/alerts">Alerts</Link>
-          <Link to="/dashboard">Dashboard</Link>
+          <Link to="/" className="nav-link">Home</Link>
+          <Link to="/alerts" className="nav-link">Alerts</Link>
+          <Link to="/dashboard" className="nav-link">Dashboard</Link>
 
           {user ? (
             <>
-              <span style={{ marginLeft: 12, marginRight: 8 }}>{user.name}</span>
+              <span className="nav-user">{user.name}</span>
               <button className="btn-login" onClick={handleLogout}>Logout</button>
             </>
           ) : (

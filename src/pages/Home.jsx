@@ -1,73 +1,117 @@
-// src/pages/Home.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
-// sample data to show UI (you can later load from api)
-const sampleEvents = [
-  { id: "evt-1", title: "Dumping near Park Gate", time: "2025-12-09T18:12:00Z", location: "Sector 12" },
-  { id: "evt-2", title: "Bags dumped at roadside", time: "2025-12-08T06:45:00Z", location: "Old Market" }
-];
+import { fetchEvidenceList } from "../api";
 
 export default function Home() {
+  const [events, setEvents] = useState([]);
+
+  useEffect(() => {
+    let active = true;
+
+    fetchEvidenceList()
+      .then((data) => {
+        if (active) {
+          setEvents(data.items || []);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setEvents([]);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
-    <div className="container">
-      {/* Centered hero */}
-      <section className="hero hero-center card">
+    <div className="container page-shell">
+      <section className="hero card">
         <div className="hero-content">
-          <h1>Welcome to SmartWaste Monitoring</h1>
+          <span className="eyebrow">Autonomous Sanitation Intelligence</span>
+          <h1>See city dumping events before they disappear into the background.</h1>
           <p className="lead">
-            Automatic detection of illegal waste dumping. Review detections, confirm evidence, and assign tasks to field teams.
+            SmartWaste blends detection, evidence review, and field response into one futuristic control surface built for municipal teams.
           </p>
 
           <div className="hero-ctas">
             <Link to="/alerts" className="btn">View Alerts</Link>
-            <Link to="/dashboard" className="btn ghost" style={{marginLeft:12}}>Open Dashboard</Link>
+            <Link to="/dashboard" className="btn ghost">Open Dashboard</Link>
+          </div>
+
+          <div className="hero-metrics">
+            <div className="metric-chip">
+              <span className="muted">Tracked events</span>
+              <strong>{events.length}</strong>
+            </div>
+            <div className="metric-chip">
+              <span className="muted">Status</span>
+              <strong>Live Patrol</strong>
+            </div>
+            <div className="metric-chip">
+              <span className="muted">Response mode</span>
+              <strong>Rapid Review</strong>
+            </div>
           </div>
         </div>
 
         <div className="hero-side">
-          <div className="stat">
-            <div className="stat-number">0</div>
-            <div className="stat-label">New Today</div>
+          <div className="holo-panel">
+            <div className="scan-line" />
+            <div className="signal-pill">Neural surveillance active</div>
+            <h3>City Grid Sync</h3>
+            <p className="lead">Detection, evidence retention, and dashboard playback stay aligned in one animated command layer.</p>
           </div>
-          <div className="stat" style={{marginTop:12}}>
-            <div className="stat-number">{sampleEvents.length}</div>
-            <div className="stat-label">Total Events</div>
+          <div className="holo-panel">
+            <div className="signal-pill">Evidence stream</div>
+            <div className="stat-number">{events.length}</div>
+            <div className="stat-label muted">Events available for review</div>
           </div>
         </div>
       </section>
 
-      {/* Recent events + quick info */}
       <section className="grid two-col">
         <div className="card">
-          <h3 style={{marginTop:0}}>Recent Events</h3>
+          <div className="section-header">
+            <div>
+              <p className="muted">Realtime queue</p>
+              <h3 className="section-title">Recent Events</h3>
+            </div>
+            <span className="signal-pill">Updated live</span>
+          </div>
           <div className="list">
-            {sampleEvents.map(ev => (
-              <Link key={ev.id} to={`/alerts/${ev.id}`} className="card-row">
+            {events.slice(0, 5).map((event) => (
+              <Link key={event.id} to={`/alerts/${event.id}`} className="card-row">
                 <div>
-                  <div style={{fontWeight:600}}>{ev.title}</div>
-                  <div className="meta">{new Date(ev.time).toLocaleString()} • {ev.location}</div>
+                  <div style={{ fontWeight: 700 }}>Dumping evidence from {event.camera_id}</div>
+                  <div className="meta">{new Date(event.timestamp).toLocaleString()} • {event.location}</div>
                 </div>
                 <div>
-                  <button className="btn small">View</button>
+                  <span className="btn small">View</span>
                 </div>
               </Link>
             ))}
-            {sampleEvents.length === 0 && <div className="empty">No recent events</div>}
+            {events.length === 0 && <div className="empty">No recent events</div>}
           </div>
         </div>
 
         <aside className="card side">
-          <h4 style={{marginTop:0}}>Quick Actions</h4>
-          <ul style={{paddingLeft:18}}>
-            <li><Link to="/alerts">Review Alerts</Link></li>
-            <li><Link to="/dashboard">Check Devices</Link></li>
+          <div className="section-header">
+            <div>
+              <p className="muted">Mission controls</p>
+              <h4 className="section-title">Quick Actions</h4>
+            </div>
+          </div>
+          <ul>
+            <li><Link to="/alerts">Review alerts</Link></li>
+            <li><Link to="/dashboard">Check devices</Link></li>
             <li><Link to="/login">Sign in</Link></li>
           </ul>
 
-          <div style={{marginTop:18}}>
+          <div style={{ marginTop: 18 }}>
             <h4>Live Feed</h4>
-            <div className="empty">No live feed yet — integrate the camera stream here.</div>
+            <div className="empty">No live feed yet. Integrate the camera stream here.</div>
           </div>
         </aside>
       </section>
