@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { deleteAllEvidence, fetchEvidenceList } from "../api";
+import { deleteAllEvidence, deleteEvidenceById, fetchEvidenceList } from "../api";
 
 export default function Dashboard() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [clearing, setClearing] = useState(false);
+  const [clearingEventId, setClearingEventId] = useState("");
 
   function loadEvents() {
     setLoading(true);
@@ -60,6 +61,23 @@ export default function Dashboard() {
       window.alert("Failed to clear evidence. Please try again.");
     } finally {
       setClearing(false);
+    }
+  }
+
+  async function handleClearEvent(event) {
+    const confirmed = window.confirm(`Delete the evidence event from ${event.location}?`);
+    if (!confirmed) {
+      return;
+    }
+
+    setClearingEventId(event.id);
+    try {
+      await deleteEvidenceById(event.id);
+      setEvents((currentEvents) => currentEvents.filter((item) => item.id !== event.id));
+    } catch {
+      window.alert("Failed to clear this event. Please try again.");
+    } finally {
+      setClearingEventId("");
     }
   }
 
@@ -130,7 +148,16 @@ export default function Dashboard() {
               <div style={{ fontWeight: 700 }}>{event.location}</div>
               <div className="meta">{event.camera_id} • {new Date(event.timestamp).toLocaleString()}</div>
             </div>
-            <Link to={`/alerts/${event.id}`} className="btn small">Open</Link>
+            <div className="row-actions">
+              <Link to={`/alerts/${event.id}`} className="btn small">Open</Link>
+              <button
+                className="btn small danger"
+                onClick={() => handleClearEvent(event)}
+                disabled={clearing || clearingEventId === event.id}
+              >
+                {clearingEventId === event.id ? "Clearing..." : "Clear"}
+              </button>
+            </div>
           </div>
         ))}
       </div>

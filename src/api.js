@@ -1,6 +1,10 @@
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://dumping-evidence-backend-production.up.railway.app";
 
+// const API_BASE_URL =
+//   import.meta.env.VITE_API_BASE_URL || "https://smart-waste-backend-kwpq.onrender.com";
+
+
 async function fetchJson(path) {
   const response = await fetch(`${API_BASE_URL}${path}`);
   if (!response.ok) {
@@ -29,4 +33,8 @@ export async function fetchEvidenceById(eventId) {
 
 export async function deleteAllEvidence() {
   return sendJson("/api/evidence", { method: "DELETE" });
+}
+
+export async function deleteEvidenceById(eventId) {
+  return sendJson(`/api/evidence/${eventId}`, { method: "DELETE" });
 }
