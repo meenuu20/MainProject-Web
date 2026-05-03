@@ -1,5 +1,5 @@
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://dumping-evidence-backend-production.up.railway.app";
+  import.meta.env.VITE_API_BASE_URL || "https://dumping-evidence-backend-production-296d.up.railway.app";
 
 // const API_BASE_URL =
 //   import.meta.env.VITE_API_BASE_URL || "https://smart-waste-backend-kwpq.onrender.com";
