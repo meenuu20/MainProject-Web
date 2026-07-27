@@ -1,0 +1,81 @@
+================================================================================
+          PROJECT OVERVIEW: SMART WASTE & ILLEGAL DUMPING DETECTION
+================================================================================
+
+1. PROJECT MISSION & PROBLEM SOLVED
+----------------------------------
+The primary goal of this project is to create an automated, high-precision 
+system for identifying illegal dumping of waste in real-time. 
+
+Illegal dumping is often missed by standard security cameras because it 
+happens quickly and is difficult to distinguish from a person simply walking 
+with a bag. This system solves that problem by using Advanced Computer Vision 
+to track the "Relationship" between a person and the objects they carry.
+
+2. ARCHITECTURE (The Three-Tier System)
+--------------------------------------
+The project is split into three decoupled modules:
+
+A) THE DETECTOR (main.py):
+   - The "Worker" that runs on a local computer or edge device (like a 
+     Raspberry Pi).
+   - It performs live inference, tracks objects, and manages the state-machine 
+     logic that determines if a "Dump" has occurred.
+   
+B) THE BACKEND (backend/app.py):
+   - A high-performance FastAPI server.
+   - It acts as the "Storage Hub," receiving detections from the Detector, 
+     saving images and videos, and serving the API to the Frontend.
+
+C) THE DASHBOARD (frontend/):
+   - A modern React application that provides a visual interface.
+   - It allows administrators to review evidence from multiple sources 
+     (both Local and Cloud) in a single unified feed.
+
+3. TECH STACK (The Tools)
+-----------------------
+- Languages: Python 3.10+ (for backend and AI) & JavaScript/React (for HUD).
+- AI Processing: ONNX Runtime (CPU-optimized for performance).
+- Models: 
+    * yolov8n.onnx (Official): High-stability person detection.
+    * last.onnx (Custom): Specialized model trained for waste detection.
+- Backend Framework: FastAPI (Asynchronous and high-performance).
+- Frontend Framework: React 18 & Vite (Fast user interface).
+- Networking: WebSockets (for live streaming) & REST API (for evidence data).
+
+4. THE "EPIPHANY" DUAL-MODEL BRAIN (How it Thinks)
+-------------------------------------------------
+Unlike standard cameras that only look for "objects," this system uses a dual-
+brain approach to ensure stability:
+
+- Stability Filter (0.55): The person detector is tuned to a high confidence 
+  threshold. This ensures your furniture, chairs, and household items are 
+  never mistaken for a "Person."
+- Sensitivity Filter (0.25): The waste detector is tuned to be ultra-sensitive 
+  to catch small, flat, or crumpled waste items like napkins or plastic bags.
+- Clothes Suppression: A specialized spatial logic layer that ignores 
+  garments (shirts/pants) by checking if a trash detection is "contained" 
+  within your person bounding box.
+
+5. SETTINGS & FINE-TUNING
+------------------------
+For maximum reliability, the system uses the following "Golden Parameters":
+
+- Absence Check (3s): A "Dump" is only confirmed after you have been 
+  physically absent from the item's vicinity for 3 seconds.
+- Stationary Check (2s): The item must be perfectly still for 2 seconds 
+  before it is considered "Placed."
+- Carry Check (0.4s): The item must move in synchronization with you for 
+  nearly half a second to be confirmed as "Carried."
+- Pre-Event Buffer (5s): The system keeps a 5-second RAM buffer. This means 
+  every evidence video catches the person *entering* the room, not just 
+  leaving it.
+
+6. OPERATIONAL WORKFLOW
+----------------------
+To start the full system from scratch:
+1. Start Backend: cd backend && python app.py
+2. Start Dashboard: cd frontend/my-react-app && npm run dev
+3. Start Detector: python main.py
+
+================================================================================

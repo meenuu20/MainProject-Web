@@ -1,0 +1,6 @@
+opencv-python
+onnxruntime
+fastapi
+uvicorn
+python-multipart
+requests

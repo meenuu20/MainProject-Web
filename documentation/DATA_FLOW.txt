@@ -1,0 +1,76 @@
+================================================================================
+          DETAILED DATA FLOW: SMART WASTE DETECTION PIPELINE
+================================================================================
+
+This document provides a technical walkthrough of how data travels from your 
+camera to your final dashboard. It is intended for developers or engineers who 
+need to understand the underlying mechanics of the system.
+
+1. THE INPUT STAGE (Frame Capture)
+---------------------------------
+- Process: The `main.py` script uses OpenCV (cv2) to open the camera stream 
+  (source=0).
+- Data: Raw BGR frames are pulled every iteration of the loop.
+- Pre-Event Buffer: Every single frame is added to a `collections.deque` (the 
+  Pre-Event Buffer). This buffer holds the last 5 seconds of footage (approx. 100 
+  frames) in RAM until an alert is triggered.
+
+2. THE ANALYTICS STAGE (AI Inference)
+------------------------------------
+Before the "Brain" can read the image, it must be prepared:
+A) Pre-Processing: 
+   - Resized to 320x320 pixels (the standard for YOLOv8 light models).
+   - Normalized (converted from 0-255 RGB to 0.0-1.0 float).
+B) Inference:
+   - yolov8n.onnx: Scans for humans. High confidence (0.55) is required to 
+     ensure a chair or box isn't mistaken for a person.
+   - last.onnx: Scans for trash items (Plastic, Paper, etc.). Lower confidence 
+     (0.25) allows the system to see even crumpled or small waste.
+C) Modern Merging (Global NMS): 
+   - Because we have two models, we use Global Non-Maximum Suppression (NMS) 
+     to ensure we don't have overlapping boxes.
+D) Clothes Suppression:
+   - A logic check is performed: If a "Garbage" box is detected whose center is 
+     inside a "Person" box, it is filtered out. This stops the system from 
+     detecting your own shirt or pants as waste.
+
+3. THE TRACKING & STATE STAGE (Decision Logic)
+---------------------------------------------
+- Centroid Tracking: The system assigns a unique ID (e.g., Garbage ID #1) by 
+  calculating the distance between the last known position and the new one.
+- The State Machine:
+  [UNKNOWN] -> [CARRIED]: If an object is <450px from a person and moves >2px.
+  [CARRIED] -> [PLACED]: If the person lets go and the object stops moving 
+                         for 2.0 seconds.
+  [PLACED]  -> [DUMPED]: If the person stays away for 3.0 seconds.
+
+4. THE EVIDENCE GENERATION STAGE (Storage)
+-----------------------------------------
+When the [DUMPED] state is reached, the system performs a multi-step save:
+- IMAGE: The current frame is saved locally as dump_YYYYMMDD_HHMMSS.jpg.
+- VIDEO: 
+    1. A new .avi file is opened. 
+    2. The 5-second RAM Buffer (Culprit Capture) is "flushed" into the file.
+    3. The next 15 seconds of live footage are written sequentially.
+    4. Result: A 20-second video showing the person walking in, dropping the 
+       bag, and the bag remaining stationary.
+
+5. THE SYNC STAGE (Network & Dashboard)
+--------------------------------------
+A) The Poster (main.py):
+   - Uses the `requests` library to send a POST call to `localhost:8000`.
+   - It attaches the image file as binary data and the metadata (timestamp, 
+     location, confidence) as form-data.
+B) The Server (backend/app.py):
+   - FastAPI receives the packet, saves the image to its permanent /storage/ 
+     folder, and adds an entry to `evidence_db.json`.
+C) The Frontend (React JS):
+   - The user opens the dashboard (localhost:5173).
+   - The React app makes two simultaneous asynchronous requests:
+     1. One to your LOCAL machine (8000).
+     2. One to the RAILWAY cloud (production).
+   - The frontend merges both lists, sorts them so the newest is first, and 
+     adjusts all image paths to be "Absolute URLs" so they display correctly 
+     from any source.
+
+================================================================================

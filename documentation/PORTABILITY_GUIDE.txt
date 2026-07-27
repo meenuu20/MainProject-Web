@@ -1,0 +1,53 @@
+================================================================================
+          PORTABILITY GUIDE: MOVING TO ANOTHER COMPUTER
+================================================================================
+
+To run this project on a different machine, you only need to copy the 
+following essential files and folders. You can safely ignore the hundreds 
+of "experiment" files and older models in the root directory.
+
+1. ESSENTIAL FOLDERS
+--------------------
+- /backend/             (The API server and database structure)
+- /frontend/            (The React Dashboard source code)
+- /documentation/       (Project Overview and Data Flow guides)
+- /evidence/            (Keep this folder structure for local saves)
+
+2. ESSENTIAL FILES (In the Root Directory)
+------------------------------------------
+- main.py               (The main detector "Brain")
+- yolov8n.onnx          (The AI model for detecting people)
+- last.onnx             (The AI model for detecting trash)
+- requirements.txt      (List of Python packages to install)
+
+3. SETUP STEPS ON THE NEW COMPUTER
+----------------------------------
+
+Step A: Python Environment
+   1. Install Python 3.10 or higher.
+   2. Open a terminal in the project root and run:
+      pip install -r requirements.txt
+   3. Go to the backend folder and run:
+      pip install -r requirements.txt
+
+Step B: Frontend Environment
+   1. Install Node.js (Latest LTS version).
+   2. Go to /frontend/my-react-app/ and run:
+      npm install
+
+Step C: Launch
+   1. Start Backend:  python backend/app.py
+   2. Start Frontend: npm run dev (inside /frontend/my-react-app/)
+   3. Start Detector: python main.py
+
+4. FILES YOU CAN SAFELY LEAVE BEHIND
+------------------------------------
+You do NOT need these to run the system:
+- Anything ending in .pt (Old PyTorch models).
+- Old ONNX files (last1.onnx, mostrecent.onnx, best_training2.onnx).
+- Old scripts (test.py, orgi.py, compare_models.py, summarize_models.py).
+- Old backups (main_restored_*.txt).
+- Result images (manual_*.jpg or comparison_results folder).
+- Log files (*.log or *.json).
+
+================================================================================
